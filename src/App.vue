@@ -4,19 +4,16 @@
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
     />
-    <!-- <Home /> -->
     <MusicPlayer />
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import Home from "./pages/Home.vue";
 import MusicPlayer from "./pages/MusicPlayer.vue";
 
 @Component({
   components: {
-    Home,
     MusicPlayer,
   },
 })

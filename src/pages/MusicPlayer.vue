@@ -9,7 +9,12 @@
       <div class="info">
         <div class="song-name">{{ current.title }}</div>
         <div class="artist-name">{{ current.artist }}</div>
-        <div>{{ index }}</div>
+        <div>Index: {{ index }}</div>
+        <div v-if="duration">
+          {{ formatTime(duration) }} / {{ formatTime(currentTime) }}
+        </div>
+        <div v-else>--:-- / --:--</div>
+        <div>{{ player.src }}</div>
       </div>
     </div>
 
@@ -18,7 +23,8 @@
     <div class="controls">
       <NueButton @btn-press="prev" icon="fa-step-backward"></NueButton>
 
-      <NueButton v-if="isPlaying" @btn-press="play" icon="fa-play"></NueButton>
+      <!-- if isPlaying is true, then show user the 'pause' controls -->
+      <NueButton v-if="!isPlaying" @btn-press="play" icon="fa-play"></NueButton>
       <NueButton v-else @btn-press="pause" icon="fa-pause"></NueButton>
 
       <NueButton @btn-press="next" icon="fa-step-forward"></NueButton>
@@ -27,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 import NueButton from "../components/NueButton.vue";
 
 interface Song {
@@ -42,10 +48,16 @@ interface Song {
   },
 })
 export default class Home extends Vue {
-  current!: Song;
   index = 0;
+
+  current!: Song;
+  duration = 0;
+  currentTime = 0;
+  intervalId!: number;
+
   isPlaying = false;
   isLoaded = false;
+
   player = new Audio();
 
   songs: Song[] = [
@@ -66,54 +78,71 @@ export default class Home extends Vue {
     },
   ];
 
-  // this.player
-  //   .play()
-  //   .then(() => {
-  //     // if song gets over, play next automatically
-  //     this.player.addEventListener("ended", this.next);
-  //     this.isPlaying = true;
-  //   })
-  //   .catch((error) => console.error(error));
+  load() {
+    this.current = this.songs[this.index];
+    this.player.src = this.current.src;
+    this.isLoaded = true;
+  }
+
+  formatTime(time: number): string {
+    const ss = time % 60;
+    const mm = Math.floor(time / 60);
+    return `${mm > 9 ? mm : "0" + mm}:${ss > 9 ? ss : "0" + ss}`;
+  }
 
   play() {
-    if (!this.isLoaded) {
-      this.current = this.songs[this.index];
-      this.player.src = this.current.src;
-      this.isLoaded = true;
-    }
+    // console.log("play");
 
-    this.isPlaying = !this.isPlaying;
+    if (!this.isLoaded) this.load();
 
-    this.player.play().catch((err) => console.log(err));
+    this.isPlaying = true;
+    this.player
+      .play()
+      .then(() => {
+        this.duration = Math.floor(this.player.duration);
+        this.currentTime = Math.floor(this.player.currentTime);
+
+        this.intervalId = setInterval(() => {
+          this.currentTime++;
+        }, 1000);
+      })
+      .catch((err) => console.log(err));
 
     this.player.addEventListener("ended", this.next);
   }
 
   pause() {
-    this.isPlaying = !this.isPlaying;
+    // console.log("pause");
+
+    this.isPlaying = false;
+    clearInterval(this.intervalId);
     this.player.pause();
   }
 
   next() {
+    // console.log("next");
+
     this.index++;
     if (this.index > this.songs.length - 1) this.index = 0;
+
+    // reload the song's src before playing
     this.isLoaded = false;
     this.play();
   }
 
   prev() {
+    // console.log("prev");
+
     this.index--;
     if (this.index < 0) this.index = this.songs.length - 1;
+
+    // reload the song's src before playing
     this.isLoaded = false;
     this.play();
   }
 
   created() {
-    console.log("Index: " + this.index);
-
-    this.current = this.songs[this.index];
-    this.player.src = this.current.src;
-    this.isLoaded = true;
+    this.load();
   }
 }
 </script>
@@ -140,5 +169,10 @@ export default class Home extends Vue {
   background: #fff;
   border-radius: 0.25rem;
   box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.19), 0 6px 6px -10px rgba(0, 0, 0, 0.23);
+}
+
+.controls {
+  display: flex;
+  flex: row;
 }
 </style>

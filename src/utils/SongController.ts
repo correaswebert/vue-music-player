@@ -1,115 +1,81 @@
-class Song234 {
-  private _songname!: string;
-
-  constructor(songname: string) {
-    this._songname = songname
-  }
-
-  set name(v: string) {
-    this._songname = v;
-  }
-
-  get name(): string {
-    return this._songname
-  }
-
-}
-
 interface Song {
   title: string
   artist: string
   src: string
 }
+export default class SongController {
+  index = 0;
 
-class SongController {
-  private index = 0;
-  isPlaying = false;
   current!: Song;
+  duration!: number;
+  currentTime!: number;
+
+  isPlaying = false;
+  isLoaded = false; // is the song loaded into the player's src
+
   player = new Audio();
-  song!: Song;
 
   songs: Song[] = [
     {
       title: "Photograph",
       artist: "Ed Sheeran",
-      src:
-        "../assets/Music/Ed_Sheeran-Photograph.mp3",
+      src: require("/home/swebert/Documents/WebProjects/side-projects/music-player/src/assets/Music/Ed_Sheeran-Photograph.mp3"),
     },
     {
       title: "Not Today",
       artist: "Imagine Dragons",
-      src:
-        "../assets/Music/Imagine_Dragons-Not_Today.mp3",
+      src: require("/home/swebert/Documents/WebProjects/side-projects/music-player/src/assets/Music/Imagine_Dragons-Not_Today.mp3"),
     },
     {
       title: "Khuda Jaane",
       artist: "N/A",
-      src:
-        "../assets/Music/Khuda_Jaane.mp3",
+      src: require("/home/swebert/Documents/WebProjects/side-projects/music-player/src/assets/Music/Khuda_Jaane.mp3"),
     },
   ];
 
-  constructor(player: HTMLAudioElement, songs: Song) {
-    this.player = player
-    this.song = songs
+  // loads the songs given by index into the Audio `player`
+  load() {
+    this.current = this.songs[this.index];
+    this.player.src = this.current.src;
+
+    this.duration = this.player.duration;
+    this.currentTime = this.player.currentTime;
+
+    this.isLoaded = true;
   }
 
-  play(song: Song) {
-    if (typeof song.src != "undefined") {
-      this.current = song;
+  play() {
+    if (!this.isLoaded) this.load();
 
-      this.player.src = this.current.src;
-    }
+    this.isPlaying = !this.isPlaying;
 
-    this.player
-      .play()
-      .then(() => {
-        // if song gets over, play next automatically
-        this.player.addEventListener(
-          "ended",
-          this.next
-        );
-        this.isPlaying = true;
-      })
-      .catch((error) => console.error(error));
+    this.player.play().catch((err) => console.log(err));
+
+    this.player.addEventListener("ended", this.next);
   }
 
   pause() {
+    this.isPlaying = !this.isPlaying;
     this.player.pause();
-    this.isPlaying = false;
   }
 
   next() {
     this.index++;
-    if (this.index > this.songs.length - 1) {
-      this.index = 0;
-    }
-
-    this.current = this.songs[this.index];
-    this.play(this.current);
+    if (this.index > this.songs.length - 1) this.index = 0;
+    this.isLoaded = false;
+    this.play();
   }
 
   prev() {
     this.index--;
-    if (this.index < 0) {
-      this.index = this.songs.length - 1;
-    }
-
-    this.current = this.songs[this.index];
-    this.play(this.current);
+    if (this.index < 0) this.index = this.songs.length - 1;
+    this.isLoaded = false;
+    this.play();
   }
 
-  // created: function () {
-  //   this.current = this.songs[this.index];
-  //   this.player.src = this.current.src;
-  // },
+  created() {
+    console.log("Index: " + this.index);
+
+    this.load();
+  }
 }
-
-
-// const song = new Song("Fireflies");
-// song.name = "Memories"
-// console.log(song.name);
-
-const song = new Audio();
-song.src = require("../assets/Music/Ed_Sheeran-Photograph.mp3")
-song.play()
