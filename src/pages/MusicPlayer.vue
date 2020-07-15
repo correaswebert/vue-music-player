@@ -100,11 +100,10 @@ export default class Home extends Vue {
       .play()
       .then(() => {
         this.duration = Math.floor(this.player.duration);
-        this.currentTime = Math.floor(this.player.currentTime);
 
         this.intervalId = setInterval(() => {
-          this.currentTime++;
-        }, 1000);
+          this.currentTime = Math.floor(this.player.currentTime);
+        }, 500);
       })
       .catch((err) => console.log(err));
 
