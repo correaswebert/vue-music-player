@@ -2,16 +2,16 @@
   <div class="player-container">
     <SongCover
       class="cover"
-      albumArtUrl="http://ecx.images-amazon.com/images/I/51XSHShbPiL.jpg"
+      :albumArtUrl="url"
       :title="current.title"
       :artist="current.artist"
     />
 
     <div class="slider">
       <!-- currentTime takes time to load, so show 0:00 instead of --:-- -->
-      <span v-if="currentTime">{{ formatTime(currentTime) }}</span>
-      <span v-else-if="duration">0:00</span>
-      <span v-else>--:--</span>
+      <span class="time-stamp" v-if="currentTime">{{ formatTime(currentTime) }}</span>
+      <span class="time-stamp" v-else-if="duration">0:00</span>
+      <span class="time-stamp" v-else>--:--</span>
 
       <input
         type="range"
@@ -20,8 +20,8 @@
         @change="updateCurrentTime"
       />
 
-      <span v-if="duration">{{ formatTime(duration) }}</span>
-      <span v-else>--:--</span>
+      <span class="time-stamp" v-if="duration">{{ formatTime(duration) }}</span>
+      <span class="time-stamp" v-else>--:--</span>
     </div>
 
     <!-- <TimeSlider
@@ -30,15 +30,25 @@
       @update-current-time="updateCurrentTime"
     /> -->
 
-    <div class="controls">
-      <NueButton @btn-press="prev" icon="fa-step-backward"></NueButton>
+    <!-- <div class="controls">
+      <NueButton @btn-press="prev" icon="fa-random"></NueButton>
+      <NueButton @btn-press="prev" icon="fa-chevron-left"></NueButton>
 
-      <!-- if isPlaying is true, then show user the 'pause' controls -->
       <NueButton v-if="!isPlaying" @btn-press="play" icon="fa-play"></NueButton>
       <NueButton v-else @btn-press="pause" icon="fa-pause"></NueButton>
 
-      <NueButton @btn-press="next" icon="fa-step-forward"></NueButton>
-    </div>
+      <NueButton @btn-press="next" icon="fa-chevron-right"></NueButton>
+      <NueButton @btn-press="next" icon="fa-undo"></NueButton>
+    </div> -->
+    <Controls
+      :isPlaying="isPlaying"
+      @play="play"
+      @pause="pause"
+      @prev="prev"
+      @next="next"
+      @loop="loop"
+      @shuffle="shuffle"
+    />
   </div>
 </template>
 
@@ -46,6 +56,7 @@
 import { Component, Vue } from "vue-property-decorator";
 import NueButton from "../components/NueButton.vue";
 import SongCover from "../components/SongCover.vue";
+import Controls from "../components/Controls.vue";
 // import TimeSlider from "../components/TimeSlider.vue";
 
 interface Song {
@@ -59,6 +70,7 @@ interface Song {
     NueButton,
     // TimeSlider,
     SongCover,
+    Controls,
   },
 })
 export default class Home extends Vue {
@@ -68,6 +80,8 @@ export default class Home extends Vue {
   duration = 0;
   currentTime = 0;
   intervalId!: number;
+  // url = "https://unsplash.com/photos/YeUVDKZWSZ4";
+  url = "http://ecx.images-amazon.com/images/I/51XSHShbPiL.jpg";
 
   isPlaying = false;
   isLoaded = false;
@@ -161,6 +175,22 @@ export default class Home extends Vue {
     this.play();
   }
 
+  loop(value: boolean) {
+    console.log(value);
+
+    this.player.loop = value;
+  }
+  shuffle(value: boolean) {
+    this.songs.forEach((song) => {
+      console.log(song.title);
+    });
+    console.log(value);
+
+    if (value) {
+      this.songs.sort(() => Math.random() - 0.5);
+    }
+  }
+
   created() {
     this.load();
   }
@@ -184,18 +214,13 @@ export default class Home extends Vue {
 .player-container {
   width: 100vw;
   height: 100vh;
-  /* max-width: 768px;
-  max-height: 1365px; */
 
   display: flex;
   flex-direction: column;
-  /* place-content: center; */
   align-items: center;
   justify-content: center;
 
-  background: #fff;
-  /* border-radius: 0.25rem;
-  box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.19), 0 6px 6px -10px rgba(0, 0, 0, 0.23); */
+  background-color: #161616;
 }
 
 .controls {
@@ -210,19 +235,24 @@ export default class Home extends Vue {
   padding-right: 0.25em;
 }
 
+.time-stamp {
+  font-family: sans-serif;
+  color: #d8d8d8;
+}
+
 .cover {
   flex-grow: 1;
 }
 
 .slider input[type="range"] {
-  margin: auto;
-  margin-left: 0.25em;
-  margin-right: 0.25em;
+  margin: auto 0.5em;
+  /* margin-left: 0.25em;
+  margin-right: 0.25em; */
+
   -webkit-appearance: none;
   position: relative;
   overflow: hidden;
   height: 10px;
-  /* width: 500px; */
   cursor: pointer;
   border: none;
   outline: none;

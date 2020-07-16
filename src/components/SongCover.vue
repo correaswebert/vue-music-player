@@ -1,5 +1,9 @@
 <template>
-  <div class="album-art" :style="{ backgroundImage: `url(${gUrl})` }">
+  <div
+    class="album-art"
+    :style="{ backgroundImage: `url(${gUrl})` }"
+    crossorigin="anonymous"
+  >
     <!-- <img :src="gUrl" alt="Album cover" @error="setFallbackImageUrl" class="album-art" /> -->
     <div class="gradient"></div>
 

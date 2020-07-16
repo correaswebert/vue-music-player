@@ -14,7 +14,7 @@ export default class NeuButton extends Vue {
 </script>
 
 <style scoped lang="scss">
-$mainC: #f1f3f6;
+$mainC: #39454e;
 $secC: #9dabc0;
 
 %center {
@@ -32,23 +32,16 @@ $secC: #9dabc0;
 
   margin: 1em;
 
+  color: #86a5cc;
+
   border: none;
   /* border: 1px solid #fff; */
   border-radius: 1.5em;
   outline: none;
 
-  box-shadow: inset 0 0 15px rgba(55, 84, 170, 0), inset 0 0 20px rgba(255, 255, 255, 0),
-    7px 7px 15px rgba(55, 84, 170, 0.15), -7px -7px 20px rgba(255, 255, 255, 1),
-    inset 0px 0px 4px rgba(255, 255, 255, 0.2);
-  .icon {
-    color: $secC;
-    height: 30px;
-    width: 30px;
-  }
-
   &:active {
-    box-shadow: inset 7px 7px 15px rgba(55, 84, 170, 0.15),
-      inset -7px -7px 20px rgba(255, 255, 255, 1), 0px 0px 4px rgba(255, 255, 255, 0.2);
+    box-shadow: inset 7px 7px 15px rgba(0, 0, 0, 0.15), inset -7px -7px 20px #080808,
+      0px 0px 4px rgba(0, 0, 0, 0.2);
   }
   transition: box-shadow 100ms ease-out;
 }
