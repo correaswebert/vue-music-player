@@ -14,11 +14,19 @@
           {{ formatTime(duration) }} / {{ formatTime(currentTime) }}
         </div>
         <div v-else>--:-- / --:--</div>
+
         <div>{{ player.src }}</div>
       </div>
     </div>
 
-    <div class="slider"></div>
+    <div class="slider">
+      <input
+        type="range"
+        v-model="currentTime"
+        :max="duration"
+        @change="updateCurrentTime"
+      />
+    </div>
 
     <div class="controls">
       <NueButton @btn-press="prev" icon="fa-step-backward"></NueButton>
@@ -90,6 +98,13 @@ export default class Home extends Vue {
     return `${mm > 9 ? mm : "0" + mm}:${ss > 9 ? ss : "0" + ss}`;
   }
 
+  // BUG: currently, if function is run when the intervalTimer is incrementing
+  //      then slider will not update...
+  // Have to give the slider more precedence over the interval updater
+  updateCurrentTime() {
+    this.player.currentTime = this.currentTime;
+  }
+
   play() {
     // console.log("play");
 
@@ -103,7 +118,7 @@ export default class Home extends Vue {
 
         this.intervalId = setInterval(() => {
           this.currentTime = Math.floor(this.player.currentTime);
-        }, 500);
+        }, 1000);
       })
       .catch((err) => console.log(err));
 
@@ -173,5 +188,43 @@ export default class Home extends Vue {
 .controls {
   display: flex;
   flex: row;
+}
+
+.slider input[type="range"] {
+  margin: auto;
+  -webkit-appearance: none;
+  position: relative;
+  overflow: hidden;
+  height: 10px;
+  width: 750px;
+  cursor: pointer;
+  border: none;
+}
+
+.slider ::-webkit-slider-runnable-track {
+  background: #ddd;
+}
+
+.slider ::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 5px;
+  height: 10px;
+  background: #000;
+  box-shadow: -100vw 0 0 100vw dodgerblue;
+}
+
+.slider ::-moz-range-track {
+  height: 10px;
+  background: #ddd;
+}
+
+.slider ::-moz-range-thumb {
+  background: #fff;
+  height: 40px;
+  width: 20px;
+  border: 3px solid #999;
+  border-radius: 0 !important;
+  box-shadow: -100vw 0 0 100vw dodgerblue;
+  box-sizing: border-box;
 }
 </style>
