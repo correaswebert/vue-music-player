@@ -1,15 +1,14 @@
 <template>
-  <div>
-    {{ g_currentTime }}
+  <div class="slider">
+    <!-- currentTime takes time to load, so show 0:00 instead of --:-- -->
+    <span class="time-stamp" v-if="currentTime">{{ formatTime(gCurrentTime) }}</span>
+    <span class="time-stamp" v-else-if="duration">0:00</span>
+    <span class="time-stamp" v-else>--:--</span>
 
-    <input
-      type="range"
-      v-model="currentTime"
-      :max="duration"
-      @change="$emit('update-current-time')"
-    />
+    <input type="range" :max="duration" @change="emitTimeUpdate" />
 
-    {{ g_duration }}
+    <span class="time-stamp" v-if="duration">{{ formatTime(gDuration) }}</span>
+    <span class="time-stamp" v-else>--:--</span>
   </div>
 </template>
 
@@ -21,51 +20,75 @@ export default class TimeSlider extends Vue {
   @Prop(Number) private duration!: number;
   @Prop(Number) private currentTime!: number;
 
-  get g_duration(): number {
+  get gDuration(): number {
     return this.duration;
   }
-  get g_currentTime(): number {
+  get gCurrentTime(): number {
     return this.currentTime;
+  }
+
+  formatTime(time: number): string {
+    const ss = time % 60;
+    const mm = Math.floor(time / 60);
+    return `${mm}:${ss > 9 ? ss : "0" + ss}`;
+  }
+
+  emitTimeUpdate(event: any) {
+    this.$emit("update-current-time", event.target.value);
   }
 }
 </script>
 
 <style lang="scss" scoped>
-input[type="range"] {
-  margin: auto;
-  -webkit-appearance: none;
-  position: relative;
-  overflow: hidden;
-  height: 10px;
-  width: 750px;
-  cursor: pointer;
-  border: none;
+.time-stamp {
+  font-family: sans-serif;
+  color: #d8d8d8;
 }
 
-::-webkit-slider-runnable-track {
-  background: #ddd;
-}
+.slider {
+  display: flex;
+  width: 100%;
+  padding-left: 0.25em;
+  padding-right: 0.25em;
 
-::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 5px;
-  height: 10px;
-  background: #000;
-  box-shadow: -100vw 0 0 100vw dodgerblue;
-}
+  input[type="range"] {
+    margin: auto 0.5em;
 
-::-moz-range-track {
-  height: 10px;
-  background: #ddd;
-}
+    -webkit-appearance: none;
+    position: relative;
+    overflow: hidden;
+    height: 10px;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    flex-grow: 1;
+  }
 
-::-moz-range-thumb {
-  background: #fff;
-  height: 40px;
-  width: 20px;
-  border: 3px solid #999;
-  border-radius: 0 !important;
-  box-shadow: -100vw 0 0 100vw dodgerblue;
-  box-sizing: border-box;
+  ::-webkit-slider-runnable-track {
+    background: #ddd;
+  }
+
+  ::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 5px;
+    height: 10px;
+    background: #000;
+    box-shadow: -100vw 0 0 100vw dodgerblue;
+  }
+
+  ::-moz-range-track {
+    height: 10px;
+    background: #ddd;
+  }
+
+  ::-moz-range-thumb {
+    background: #fff;
+    height: 40px;
+    width: 20px;
+    border: 3px solid #999;
+    border-radius: 0 !important;
+    box-shadow: -100vw 0 0 100vw dodgerblue;
+    box-sizing: border-box;
+  }
 }
 </style>

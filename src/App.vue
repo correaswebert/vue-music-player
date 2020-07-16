@@ -4,6 +4,11 @@
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
     />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins&display=swap"
+    />
+
     <MusicPlayer />
   </div>
 </template>
@@ -28,6 +33,12 @@ export default class App extends Vue {}
 }
 
 #app {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 100vh;
+
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

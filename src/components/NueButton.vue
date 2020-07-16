@@ -1,6 +1,7 @@
 <template>
-  <button @click="$emit('btn-press')" class="cta">
-    <i :class="['fa', icon]"></i>
+  <button @click="$emit('btn-press')" class="btn">
+    <!-- adjust play button for visual appeal -->
+    <i :class="['fa', icon, icon === 'fa-play' ? 'adjust' : '']"></i>
   </button>
 </template>
 
@@ -14,30 +15,26 @@ export default class NeuButton extends Vue {
 </script>
 
 <style scoped lang="scss">
-$mainC: #39454e;
-$secC: #9dabc0;
-
-%center {
+.btn {
   display: flex;
   justify-content: center;
   align-items: center;
-}
 
-.cta {
-  @extend %center;
-
-  width: 5em;
-  height: 5em;
-  background: $mainC;
+  width: 4em;
+  height: 4em;
+  background: #39454e;
 
   margin: 1em;
 
   color: #86a5cc;
 
   border: none;
-  /* border: 1px solid #fff; */
   border-radius: 50%;
   outline: none;
+
+  i.adjust {
+    margin-left: 3px;
+  }
 
   &:active {
     box-shadow: inset 7px 7px 15px rgba(0, 0, 0, 0.15), inset -7px -7px 20px #080808,
