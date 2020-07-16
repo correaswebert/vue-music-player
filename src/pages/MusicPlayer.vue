@@ -1,32 +1,34 @@
 <template>
   <div class="player-container">
-    <div class="album-art">
-      <img
-        src="http://ecx.images-amazon.com/images/I/51XSHShbPiL.jpg"
-        alt="Album cover"
-      />
-
-      <div class="info">
-        <div class="song-name">{{ current.title }}</div>
-        <div class="artist-name">{{ current.artist }}</div>
-        <div>Index: {{ index }}</div>
-        <div v-if="duration">
-          {{ formatTime(duration) }} / {{ formatTime(currentTime) }}
-        </div>
-        <div v-else>--:-- / --:--</div>
-
-        <div>{{ player.src }}</div>
-      </div>
-    </div>
+    <SongCover
+      class="cover"
+      albumArtUrl="http://ecx.images-amazon.com/images/I/51XSHShbPiL.jpg"
+      :title="current.title"
+      :artist="current.artist"
+    />
 
     <div class="slider">
+      <!-- currentTime takes time to load, so show 0:00 instead of --:-- -->
+      <span v-if="currentTime">{{ formatTime(currentTime) }}</span>
+      <span v-else-if="duration">0:00</span>
+      <span v-else>--:--</span>
+
       <input
         type="range"
         v-model="currentTime"
         :max="duration"
         @change="updateCurrentTime"
       />
+
+      <span v-if="duration">{{ formatTime(duration) }}</span>
+      <span v-else>--:--</span>
     </div>
+
+    <!-- <TimeSlider
+      :duration="duration"
+      :currentTime="currentTime"
+      @update-current-time="updateCurrentTime"
+    /> -->
 
     <div class="controls">
       <NueButton @btn-press="prev" icon="fa-step-backward"></NueButton>
@@ -43,6 +45,8 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import NueButton from "../components/NueButton.vue";
+import SongCover from "../components/SongCover.vue";
+// import TimeSlider from "../components/TimeSlider.vue";
 
 interface Song {
   title: string;
@@ -53,6 +57,8 @@ interface Song {
 @Component({
   components: {
     NueButton,
+    // TimeSlider,
+    SongCover,
   },
 })
 export default class Home extends Vue {
@@ -81,7 +87,7 @@ export default class Home extends Vue {
     },
     {
       title: "Khuda Jaane",
-      artist: "N/A",
+      artist: "Kay Kay",
       src: require("/home/swebert/Documents/WebProjects/side-projects/music-player/src/assets/Music/Khuda_Jaane.mp3"),
     },
   ];
@@ -95,7 +101,7 @@ export default class Home extends Vue {
   formatTime(time: number): string {
     const ss = time % 60;
     const mm = Math.floor(time / 60);
-    return `${mm > 9 ? mm : "0" + mm}:${ss > 9 ? ss : "0" + ss}`;
+    return `${mm}:${ss > 9 ? ss : "0" + ss}`;
   }
 
   // BUG: currently, if function is run when the intervalTimer is incrementing
@@ -178,11 +184,18 @@ export default class Home extends Vue {
 .player-container {
   width: 100vw;
   height: 100vh;
-  max-width: 768px;
-  max-height: 1365px;
+  /* max-width: 768px;
+  max-height: 1365px; */
+
+  display: flex;
+  flex-direction: column;
+  /* place-content: center; */
+  align-items: center;
+  justify-content: center;
+
   background: #fff;
-  border-radius: 0.25rem;
-  box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.19), 0 6px 6px -10px rgba(0, 0, 0, 0.23);
+  /* border-radius: 0.25rem;
+  box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.19), 0 6px 6px -10px rgba(0, 0, 0, 0.23); */
 }
 
 .controls {
@@ -190,15 +203,30 @@ export default class Home extends Vue {
   flex: row;
 }
 
+.slider {
+  display: flex;
+  width: 100vw;
+  padding-left: 0.25em;
+  padding-right: 0.25em;
+}
+
+.cover {
+  flex-grow: 1;
+}
+
 .slider input[type="range"] {
   margin: auto;
+  margin-left: 0.25em;
+  margin-right: 0.25em;
   -webkit-appearance: none;
   position: relative;
   overflow: hidden;
   height: 10px;
-  width: 750px;
+  /* width: 500px; */
   cursor: pointer;
   border: none;
+  outline: none;
+  flex-grow: 1;
 }
 
 .slider ::-webkit-slider-runnable-track {
