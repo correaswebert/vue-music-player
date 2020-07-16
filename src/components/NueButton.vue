@@ -36,7 +36,7 @@ $secC: #9dabc0;
 
   border: none;
   /* border: 1px solid #fff; */
-  border-radius: 1.5em;
+  border-radius: 50%;
   outline: none;
 
   &:active {

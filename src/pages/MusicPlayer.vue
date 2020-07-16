@@ -176,16 +176,10 @@ export default class Home extends Vue {
   }
 
   loop(value: boolean) {
-    console.log(value);
-
     this.player.loop = value;
   }
-  shuffle(value: boolean) {
-    this.songs.forEach((song) => {
-      console.log(song.title);
-    });
-    console.log(value);
 
+  shuffle(value: boolean) {
     if (value) {
       this.songs.sort(() => Math.random() - 0.5);
     }

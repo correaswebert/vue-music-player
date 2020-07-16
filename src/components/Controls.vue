@@ -1,14 +1,22 @@
 <template>
   <div class="controls">
-    <NueButton @btn-press="shuffle" icon="fa-random"></NueButton>
-    <NueButton @btn-press="$emit('prev')" icon="fa-chevron-left"></NueButton>
+    <button @click="shuffle" :style="{ color: shuffled ? '#7fffd4' : '#999' }">
+      <i class="fa fa-random" />
+    </button>
 
-    <!-- if isPlaying is true, then show user the 'pause' controls -->
-    <NueButton v-if="!gIsPlaying" @btn-press="$emit('play')" icon="fa-play"></NueButton>
-    <NueButton v-else @btn-press="$emit('pause')" icon="fa-pause"></NueButton>
+    <div class="main-controls">
+      <button @click="$emit('prev')"><i class="fa fa-chevron-left main" /></button>
 
-    <NueButton @btn-press="$emit('next')" icon="fa-chevron-right"></NueButton>
-    <NueButton @btn-press="loop" icon="fa-undo"></NueButton>
+      <!-- if isPlaying is true, then show user the 'pause' controls -->
+      <NueButton v-if="!gIsPlaying" @btn-press="$emit('play')" icon="fa-play"></NueButton>
+      <NueButton v-else @btn-press="$emit('pause')" icon="fa-pause"></NueButton>
+
+      <button @click="$emit('next')"><i class="fa fa-chevron-right main" /></button>
+    </div>
+
+    <button @click="loop" :style="{ color: looped ? '#7fffd4' : '#999' }">
+      <i class="fa fa-undo" />
+    </button>
   </div>
 </template>
 
@@ -44,7 +52,28 @@ export default class Controls extends Vue {
 
 <style lang="scss" scoped>
 .controls {
+  width: 100%;
+  max-width: 586px;
   display: flex;
-  flex: row;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.main-controls {
+  display: inline-flex;
+  justify-content: space-between;
+  color: #86a5cc;
+}
+
+button {
+  background: none;
+  border: none;
+  outline: none;
+  color: aquamarine;
+
+  i.main {
+    color: #86a5cc;
+    margin: 0 1em;
+  }
 }
 </style>
